@@ -11,6 +11,8 @@ Vagrant.configure('2') do |config|
 
   config.ssh.forward_agent = true
 
+  config.vm.provision :shell, :inline => 'apt-get -q -y update'
+
   config.vm.provision :chef_solo do |chef|
     chef.data_bags_path = "data_bags"
     chef.cookbooks_path = "cookbooks"

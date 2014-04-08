@@ -30,12 +30,12 @@ deploy '/apps/alpha' do
       directory "/apps/alpha/shared/log"
       cookbook_file "/apps/alpha/shared/config/database.yml"
       system('bundle --deployment --path /tmp/bundles')
+      system('mysqladmin create my_interview_development || echo "Already Created"')
     end
   end
   before_restart do
     Dir.chdir(release_path) do
       system('killall -9 ruby1.9.1')
-      system('mysqladmin create my_interview_development || echo "Already Created"')
     end
   end
 
