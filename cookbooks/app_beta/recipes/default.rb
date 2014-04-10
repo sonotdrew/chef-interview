@@ -30,16 +30,17 @@ deploy '/apps/beta' do
       directory "/apps/beta/shared/log"
       cookbook_file "/apps/beta/shared/config/database.yml"
       system('bundle --deployment --path /tmp/bundles')
-    end
-  end
-  before_restart do
-    Dir.chdir(release_path) do
-      system('killall -9 ruby1.9.1')
       system('mysqladmin create my_interview_development || echo "Already Created"')
     end
   end
+  before_restart do
+    execute "restarting app_beta" do
+      command 'kill -9 $(cat /apps/beta/shared/rack.pid)'
+      only_if "test -f /apps/beta/shared/rack.pid"
+    end
+  end
 
-  restart_command 'bundle exec rackup -p 9293 -D'
+  restart_command 'bundle exec rackup -p 9293 -D -P /apps/beta/shared/rack.pid'
 end
 
 user 'liftopian'
