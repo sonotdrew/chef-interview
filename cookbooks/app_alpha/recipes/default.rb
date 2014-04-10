@@ -34,12 +34,13 @@ deploy '/apps/alpha' do
     end
   end
   before_restart do
-    Dir.chdir(release_path) do
-      system('killall -9 ruby1.9.1')
+    execute "restarting app_alpha" do
+      command 'kill -9 $(cat /apps/alpha/shared/rack.pid)'
+      only_if "test -f /apps/alpha/shared/rack.pid"
     end
   end
 
-  restart_command 'bundle exec rackup -D'
+  restart_command 'bundle exec rackup -D -P /apps/alpha/shared/rack.pid'
 end
 
 user 'liftopian'
